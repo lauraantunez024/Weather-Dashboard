@@ -1,0 +1,17 @@
+button {
+    margin: 10px;
+    margin-right: 5px;
+}
+
+#search-form {
+    margin: 10px;
+}
+
+h1 {
+    margin: auto;
+    padding: 25px;
+}
+
+.card-weather {
+    margin-right: 5px;
+}
