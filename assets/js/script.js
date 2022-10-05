@@ -1,25 +1,25 @@
 var searchForm = document.querySelector("#search-form");
 var weatherDayTemp = document.querySelector("#weather-temp-day");
-var weatherDayWind = document.querySelector("weather-wind-day");
-var weatherDayHumidity = document.querySelector("weather-humidity-day");
-var weatherWind = document.querySelector("weather-wind");
-var weatherTemp = document.querySelector("weather-temp");
-var weatherCity = document.querySelector("weather-city");
-var uv = document.querySelector("city-uv");
+var weatherDayWind = document.querySelector("#weather-wind-day");
+var weatherDayHumidity = document.querySelector("#weather-humidity-day");
+var weatherWind = document.querySelector("#weather-wind");
+var weatherTemp = document.querySelector("#weather-temp");
+var weatherCity = document.querySelector("#weather-day-city");
+var uv = document.querySelector("#city-uv");
 var weatherContainer = document.querySelector("#weather-container");
 var forecastContainerEl = document.querySelector("#forecast-container");
 var outerForecastContainerEl = document.querySelector("#outer-forecast-container");
 var weatherDayDateEl = document.querySelector("#weather-day-date");
-var weatherDayIconEl = document.querySelector("weather-day-icon");
+var weatherDayIconEl = document.querySelector("#weather-day-icon");
 var buttonContainerEl = document.querySelector("#button-container");
 var searchFormInput = document.querySelector("#search-form-input")
-var baseUrl = "http://api.openweathermap.org/";
-var apiKey = "18e3e4ab32179be2cd6762b22f329d49";
+var baseUrl = "https://api.openweathermap.org/";
+var apiKey = "cf4aaca52a302ee9f63313ad83a08d7e";
 
 
 function populateForecast(data){
     forecastContainerEl.innerHTML = "";
-    data.forEach(function (day, index){
+    data.forEach(function(day, index){
         if(index === 0 || index > 5) {
             return;
         }
@@ -45,6 +45,8 @@ function populateForecast(data){
         <dd>${wind}</dd>
         <dt>Humidity:</dt>
         <dd>${humidity}</dd>
+    <dl>
+    </div>
     `;
     forecastContainerEl.appendChild(div);
     });
@@ -52,7 +54,7 @@ function populateForecast(data){
     };
 
 function getCityWeather(city) {
-    var url = `${baseUrl}geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
+    var url = `${baseUrl}/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
 
     fetch(url)
         .then(function(response) {
@@ -69,7 +71,7 @@ function getCityWeather(city) {
             var lat = cityObject.lat;
             var lon = cityObject.lon;
 
-            var currentWeatherUrl = `${baseUrl}data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
+            var currentWeatherUrl = `${baseUrl}/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
             fetch(currentWeatherUrl)
                 .then(function(response) {
@@ -77,12 +79,11 @@ function getCityWeather(city) {
                 }).then(function (data) {
                     console.log(data);
                     var date = moment(Date.now()).format("L");
-                    var current = data.current;
-                    var temp = current.temp;
-                    var wind = current.wind_speed;
-                    var humidity = current.wind_speed;
-                    var uvIndex= current.uvi;
-                    var icon = current.weather[0].icon;
+                    var temp = data.temp;
+                    var wind = data.wind_speed;
+                    var humidity = data.wind_speed;
+                    var uvIndex= data.uvi;
+                    var icon = data.weather[0].icon;
 
                     weatherCity.textContent = city;
                     weatherDayDateEl.textContent = date;
@@ -97,9 +98,9 @@ function getCityWeather(city) {
                     } else  { 
                         uv.classList.add("bad") 
                 }
-                weatherDayIconEl.src = `https://openweathermap.org/img/wn/${icon}.png`;
+                weatherDayIconEl.src = `http://openweathermap.org/img/wn/${icon}.png`;
                 weatherContainer.classList.remove("hide");
-                populateForecast(data.daily);
+                populateForecast(data.list);
                })
             })
         };
@@ -115,7 +116,7 @@ function populateButtons() {
 
     cities.forEach(function(city) {
         var button = document.createElement("button");
-        button.classList = "btw btn-secondary col-12"
+        button.classList = "btn btn-secondary col-12"
         button.textContent = city;
         button.setAttribute("data-city", city);
         buttonContainerEl.appendChild(button);
