@@ -3,7 +3,6 @@ var weatherDayTemp = document.querySelector("#weather-temp-day");
 var weatherDayWind = document.querySelector("#weather-wind-day");
 var weatherDayHumidity = document.querySelector("#weather-humidity-day");
 var weatherWind = document.querySelector("#weather-wind");
-var weatherTemp = document.querySelector("#weather-temp");
 var weatherCity = document.querySelector("#weather-day-city");
 var uv = document.querySelector("#city-uv");
 var weatherContainer = document.querySelector("#weather-container");
@@ -17,42 +16,43 @@ var baseUrl = "https://api.openweathermap.org/";
 var apiKey = "cf4aaca52a302ee9f63313ad83a08d7e";
 
 
-// function populateForecast(data){
+function populateForecast(data){
 
-//     forecastContainerEl.innerHTML = "";
-//     data.forEach(function(day, index){
-//         if(index === 0 || index > 5) {
-//             return;
-//         }
-//     var dt = day.dt;
-//     var date = moment(dt * 1000).format("L");
-//     var temp = day.temp.day;
-//     var wind = day.wind_speed;
-//     var humidity = day.humidity;
-//     var div = document.createElement("div");
-//     var offsetClass = "";
-//     if (index === 1) {
-//         offsetClass = "col-lg-offset-1";
-//     }
-//     div.classList = `card-weather-container col-sm-12 ${offsetClass} col-lg-2 text-light`;
-//     div.innerHTML = `
-//     <div class=card-weather bg-dark p-3> 
-//     <h4>${date}</h4>
-//     <img src="https://openweathermap.org/img/wn/${icon}.png />
-//     <dl>
-//         <dt>Temp:</dt>
-//         <dd>${temp}</dd>
-//         <dt>Wind:</dt>
-//         <dd>${wind}</dd>
-//         <dt>Humidity:</dt>
-//         <dd>${humidity}</dd>
-//     <dl>
-//     </div>
-//     `;
-//     forecastContainerEl.appendChild(div);
-//     });
-//     outerForecastContainerEl.classList.remove("hide");
-//     };
+    forecastContainerEl.innerHTML = "";
+    data.forEach(function(day, index){
+        if(index === 0 || index > 5) {
+            return;
+        }
+    var dt = day.dt;
+    var date = moment(dt * 1000).format("L");
+    var temp = day.temp.day;
+    var wind = day.wind_speed;
+    var humidity = day.humidity;
+    var icon = day.weather[0].icon;
+    var div = document.createElement("div");
+    var offsetClass = "";
+    if (index === 1) {
+        offsetClass = "col-lg-offset-1";
+    }
+    div.classList = `card-weather-container col-sm-12 ${offsetClass} col-lg-2 text-light`;
+    div.innerHTML = `
+    <div class=card-weather bg-dark p-3> 
+    <h4>${date}</h4>
+    <img src="https://openweathermap.org/img/wn/${icon}.png />
+    <dl>
+        <dt>Temp:</dt>
+        <dd>${temp}</dd>
+        <dt>Wind:</dt>
+        <dd>${wind}</dd>
+        <dt>Humidity:</dt>
+        <dd>${humidity}</dd>
+    </dl>
+    </div>
+    `;
+    forecastContainerEl.appendChild(div);
+    });
+    outerForecastContainerEl.classList.remove("hide");
+    };
 
 function getCityWeather(city) {
     var url = `${baseUrl}/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
@@ -72,29 +72,28 @@ function getCityWeather(city) {
             var lat = cityObject.lat;
             var lon = cityObject.lon;
 
-            var currentWeatherUrl = `${baseUrl}data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
-            var forecastWeatherUrl = `${baseUrl}data/2.5/forecast/daily?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+            var currentWeatherUrl = `${baseUrl}data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
 
             fetch(currentWeatherUrl)
                 .then(function(response) {
                     return response.json();
-                })
-                .then(function(data) {
+                }).then(function (data) {
                     console.log(data);
                     var date = moment(Date.now()).format("L");
-                    var temp = data.main.temp;
-                    var wind = data.wind.speed;
-                    var humidity = data.main.humidity;
-                    var uvIndex= data.main.feels_like;
-                    var icon = data.weather[0].icon;
+                    var current = data.current;
+                    var temp = current.temp;
+                    var wind = current.wind_speed;
+                    var humidity = current.humidity;
+                    var uvi = current.uvi;
+                    var icon = current.weather[0].icon;
 
                     weatherCity.textContent = city;
                     weatherDayDateEl.textContent = date;
                     weatherDayWind.textContent = wind;
                     weatherDayTemp.textContent = temp;
                     weatherDayHumidity.textContent = humidity;
-                    uv.textContent = uvIndex;
-                    if (uvIndex < 3) {
+                    uv.textContent = uvi;
+                    if (uvi < 3) {
                         uv.classList.add("nice");
                     } else if (uv < 7) {
                         uv.classList.add("ok");
@@ -103,60 +102,10 @@ function getCityWeather(city) {
                 }
                 weatherDayIconEl.src = `http://openweathermap.org/img/wn/${icon}.png`;
                 weatherContainer.classList.remove("hide");
-               })
-               fetch(forecastWeatherUrl)
-               .then(function(response) {
-                return response.json();
-            })
-               .then(function(data){
-                console.log(data);
-                forecastContainerEl.innerHTML = "";
-
-
-
+                populateForecast(data.daily);
                })
             })
         };
-
-
-
-// function populateForecast(data){
-
-//     forecastContainerEl.innerHTML = "";
-//     data.forEach(function(day, index){
-//         if(index === 0 || index > 5) {
-//             return;
-//         }
-//     var dt = day.dt;
-//     var date = moment(dt * 1000).format("L");
-//     var temp = day.temp.day;
-//     var wind = day.wind_speed;
-//     var humidity = day.humidity;
-//     var div = document.createElement("div");
-//     var offsetClass = "";
-//     if (index === 1) {
-//         offsetClass = "col-lg-offset-1";
-//     }
-//     div.classList = `card-weather-container col-sm-12 ${offsetClass} col-lg-2 text-light`;
-//     div.innerHTML = `
-//     <div class=card-weather bg-dark p-3> 
-//     <h4>${date}</h4>
-//     <img src="https://openweathermap.org/img/wn/${icon}.png />
-//     <dl>
-//         <dt>Temp:</dt>
-//         <dd>${temp}</dd>
-//         <dt>Wind:</dt>
-//         <dd>${wind}</dd>
-//         <dt>Humidity:</dt>
-//         <dd>${humidity}</dd>
-//     <dl>
-//     </div>
-//     `;
-//     forecastContainerEl.appendChild(div);
-//     });
-//     outerForecastContainerEl.classList.remove("hide");
-//     };
-
 
 function populateButtons() {
     buttonContainerEl.innerHTML = "";
@@ -215,5 +164,4 @@ function init() {
 }
 
 init();
-
 
