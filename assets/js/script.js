@@ -29,16 +29,18 @@ function populateForecast(data){
     var wind = day.wind_speed;
     var humidity = day.humidity;
     var icon = day.weather[0].icon;
+    console.log(icon)
     var div = document.createElement("div");
     var offsetClass = "";
     if (index === 1) {
         offsetClass = "col-lg-offset-1";
     }
-    div.classList = `card-weather-container col-sm-12 ${offsetClass} col-lg-2 text-light`;
+    div.classList = `card-weather-container col-sm-12 ${offsetClass} col-lg-2`;
     div.innerHTML = `
-    <div class=card-weather bg-dark p-3> 
+    <div class=card text-white bg-info mb-3" style="max-width: 18rem;"> 
     <h4>${date}</h4>
-    <img src="https://openweathermap.org/img/wn/${icon}.png />
+    <img src="https://openweathermap.org/img/wn/${icon}.png" />
+
     <dl>
         <dt>Temp:</dt>
         <dd>${temp}</dd>
@@ -100,7 +102,7 @@ function getCityWeather(city) {
                     } else  { 
                         uv.classList.add("bad") 
                 }
-                weatherDayIconEl.src = `http://openweathermap.org/img/wn/${icon}.png`;
+                weatherDayIconEl.src = `https://openweathermap.org/img/wn/${icon}.png`;
                 weatherContainer.classList.remove("hide");
                 populateForecast(data.daily);
                })
